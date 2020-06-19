@@ -1,0 +1,103 @@
+openapi: 3.0.2
+# Cabecera del documento.
+info:
+  title: Delilah Restó
+  description: Tercer proyecto de la carrera DWFS de Acamica
+  version: 1.0.0
+# Fin cabecera del documento.
+
+servers:
+- url: /myServer
+tags:
+- name: Users
+  description: Operations avalible on users
+- name: Products
+  description: Operations avalible on products
+- name: Orders
+  description: Operations avalible on orders
+
+
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: Creates a new User in the DataBase
+      responses:
+        200:
+          description: User correctly added to database
+        400:
+          description: Error validating input data
+        409:
+          description: Username already exists, please pick another
+  
+  
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        username:
+          type: string
+          example: FreddyMercury22
+        fullname:
+          type: string
+          example: Marcelo Gallardo
+        email:
+          type: string
+          example: Marcelo_31@riverplate.com
+        phone:
+          type: integer
+          example: 59089832
+        address:
+          type: string
+          example: Fake St 123, New Zeland
+        admin:
+          type: boolean
+          example: Is admin? (Y/N)
+    
+    Products:
+      type: object
+      properties: 
+        id:
+          type: integer
+          example: 35
+        name:
+          type: string
+          example: Cheese Burger
+        price:
+          type: integer
+          example: 250
+        img_url:
+          type: string
+          example: https://i.pinimg.com/originals/8b/61/11/8b611136ead0d4c247f0fef92925f284.jpg
+        description:
+          type: string
+          example: A burger between two breads with a slice of cheese on top of it
+    
+    Orders:
+      type: object
+      properties:
+        order_id:
+          type: integer
+          example: 12
+        order_status:
+          type: string
+          example: on the way
+        description:
+          type: string
+          example: 1xChesseBurg
+        payment_method:
+          type: string
+          example: cash
+        order_amount:
+          type: integer
+          example: 250
+          
+        
+
