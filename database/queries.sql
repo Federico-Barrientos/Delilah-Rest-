@@ -75,3 +75,15 @@ VALUE
     FALSE
    );
  
+ INSERT INTO 'products'('name', 'price', 'description', 'img_url')
+ VALUE(
+     "French Fries",
+     100,
+    "100gr of the best french fries",
+    "https://www.seriouseats.com/2018/04/20180309-french-fries-vicky-wasik-15-1500x1125.jpg"
+ ),(
+     "Chesee Burger",
+     150,
+    "A simple chesee burger with chesee (?)",
+    "https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg"
+ );
