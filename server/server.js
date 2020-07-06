@@ -8,9 +8,10 @@ const jwt = require('jsonwebtoken');
 const JWTSing = "Delilah_2020";
 // DB Setup
 const Sequelize = require('sequelize');
-// const db = new Sequelize('mysql://${db_user}:${db_password}:@${db_host}:${db_port}/${db_name}');
-const {db_user, db_password, db_host, db_port, db_name} = require('../database/db_connection');
-const db = new Sequelize('mysql://root:@127.0.0.1:3306/delilah_resto');
+const { db_host, db_name, db_user, db_password, db_port } = require("../database/db_connection");
+const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}`);
+
+
 
 //Server
 server.listen(3000, () => {
@@ -59,7 +60,7 @@ server.post('/users', (req,res) => {
         {
             replacements: nuevoUsuario
         }
-    ).then(response => {
+    ).then(() => {
         res.status(201).json({
             mensaje: 'El usuario: ' + nuevoUsuario.username + ' fue agregado con exito'
         });
@@ -76,10 +77,10 @@ server.post('/users', (req,res) => {
 //get all products
 server.get('/products',(req, res) => {
     db.query(
-        'SELECT * FROM products',{
+        'SELECT * FROM products WHERE is_active = TRUE',{
             type: db.QueryTypes.SELECT
         })
-        .then(() => {
+        .then(response => {
             res.status(200).json(response);
         })
         .catch(err => {
@@ -89,8 +90,29 @@ server.get('/products',(req, res) => {
         });
     });
 });
+
+//get one product by id
+server.get('/products/:id', (req, res) => {
+    productID = req.params.id;
+    db.query(
+        `SELECT * FROM products WHERE id = :id`, {
+            replacements: productID,
+            type: db.QueryTypes.SELECT
+        })
+        .then(response => {
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+        });
+    });
+})
+
+
 //post a new product
-server.post('/products', (req, res) => {
+server.post('/products', validateInfo, (req, res) => {
     const newProduct = req.body;
     db.query(
         `INSERT INTO products(
@@ -117,4 +139,28 @@ server.post('/products', (req, res) => {
         });
     })
 })
+
+//middlewares//////////////////////////////////
+
+function validateInfo(req, res , next) {
+    const newProduct = req.body;
+
+    db.query(
+        'SELECT * FROM products WHERE name=:name',{
+            type: db.QueryTypes.SELECT,
+            replacements : {
+                name: newProduct.name
+            }
+        })
+        .then(response => {
+            if(response.length !== 0){
+                res.status(409).json({
+                    mensaje: 'The product ' + newProduct.name + ' Already exists'
+                })
+            }
+            else{
+                next();
+            }
+        })
+}
 

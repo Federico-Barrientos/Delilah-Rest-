@@ -12,9 +12,4 @@ module.exports = {
     db_name
 };
 
-// const conf_db_host = "localhost";
-// const conf_db_name = "delilah_resto";
-// const conf_user = "root";
-// const conf_password = "";
-// const conf_port = "3306";
 
