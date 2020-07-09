@@ -12,6 +12,7 @@ const JWTSing = "Delilah_2020";
 // DB Setup
 const Sequelize = require('sequelize');
 const { db_host, db_name, db_user, db_password, db_port } = require("../database/db_connection");
+const { response } = require('express');
 const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}`);
 
 
@@ -24,10 +25,27 @@ server.use(bodyParser.json());
 
 
 ////ROUTES PRODUCTS/////
-//get all products
+//get all avalible products
 server.get('/products',(req, res) => {
     db.query(
-        'SELECT * FROM products WHERE is_active = TRUE',{
+        'SELECT name, price, description, img_url FROM products WHERE is_active = TRUE',{
+            type: db.QueryTypes.SELECT
+        })
+        .then(response => {
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+        });
+    });
+});
+
+//get all products(only admin)
+server.get('/products_admin',(req, res) => {
+    db.query(
+        'SELECT * FROM products',{
             type: db.QueryTypes.SELECT
         })
         .then(response => {
@@ -134,6 +152,20 @@ server.post('/products', validateInfo, (req, res) => {
 //     })
 // })
 
+//Disable a product
+server.delete('/products/:id', checkIfProductExists, (req, res) => {
+    const product = req.params.id;
+
+    db.query(
+        'UPDATE products SET is_active = false WHERE product_id = :id',{
+            replacements: {id : product}
+        })
+        .then(response => {
+            res.status(202).json({
+                message: "the product has been disabled"
+        })
+    })  
+})
 
 /////ROUTES USERS/////
 //get all users
@@ -194,7 +226,7 @@ function validateInfo(req, res , next) {
     const newProduct = req.body;
 
     db.query(
-        'SELECT * FROM products WHERE name=:name',{
+        'SELECT name FROM products WHERE name=:name',{
             type: db.QueryTypes.SELECT,
             replacements : {
                 name: newProduct.name
@@ -203,7 +235,7 @@ function validateInfo(req, res , next) {
         .then(response => {
             if(response.length !== 0){
                 res.status(409).json({
-                    mensaje: 'The product ' + newProduct.name + ' Already exists'
+                    message: 'The product ' + newProduct.name + ' Already exists'
                 })
             }
             else{
@@ -212,3 +244,48 @@ function validateInfo(req, res , next) {
         })
 }
 
+function checkIfUserExists (req, res, next) {
+    const user = req.body;
+
+    db.query(
+        'SELECT * FROM users WHERE id=:id',{
+            type: db.QueryTypes.SELECT,
+            replacements: {
+                id: user.id
+            }
+        })
+        .then(response => {
+            if(response.length !== 0){
+                res.status(404).json({
+                    message: "The user you're looking for doesn't exist" 
+                })
+            }
+            else{
+                next();
+            }
+        })
+}
+
+function checkIfProductExists (req, res, next) {
+    const product = req.params.id;
+
+
+    db.query(
+        'SELECT * FROM products WHERE product_id = :id',{
+            type: db.QueryTypes.SELECT,
+            replacements: {
+                id: product
+            }
+        })
+        .then(response => {
+            // console.log("holis" + JSON.stringify(response[0].product_id));
+            if(response.length == 0){
+                res.status(404).json({
+                    message: "The product you're looking for doesn't exist" 
+                })
+            }
+            else{
+                next();
+            }
+        })
+}
