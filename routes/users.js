@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
     });
 }) 
 //post users
-router.post('/', checkEmptyFieldsUser, checkUserExistence, (req,res) => {
+router.post('/', checkEmptyFieldsUser, checkUsernameExistence, (req,res) => {
     const nuevoUsuario = req.body;
     db.query(
         `INSERT INTO users (
@@ -93,10 +93,8 @@ function checkEmptyFieldsUser (req, res, next) {
     }
 }
 
-//pendiente para arreglar
-function checkUserExistence(req, res, next) {
+function checkUsernameExistence(req, res, next) {
     const fields = req.body;
-    console.log(fields.username);
     db.query(
         'SELECT * FROM users WHERE username = :username ',
         {
@@ -104,17 +102,12 @@ function checkUserExistence(req, res, next) {
             replacements: {username: fields.username}
         })
         .then(response => {
-            response = response[0];
-            console.log(response.username);
-            if(response.length == ""){
+            // response = response[0];
+
+            if(response.length !== 0){
+                res.status(409).json({message: "User already exists"})   
+            }else{
                 next();
-            }
-            else if(response.username == fields.username){
-                res.status(409).json({message: "User already exists"})  
-            }else if(response.email == fields.email){
-                res.status(409).json({message: "email already in use"})  
-            }else if(response.phoneNumber == fields.phoneNumber){
-                res.status(409).json({message: "phoneNumber already in user"})  
             }
         })
             .catch(err => {
@@ -124,5 +117,7 @@ function checkUserExistence(req, res, next) {
                 });
             });
 }
+
+
 
 module.exports = router;
