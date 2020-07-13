@@ -17,7 +17,8 @@ CREATE TABLE users (
     phoneNumber INT(20) NOT NULL,
     user_address VARCHAR(255) NOT NULL,
     password VARCHAR(70) NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE products (

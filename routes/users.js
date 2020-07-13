@@ -5,6 +5,10 @@ const Sequelize = require('sequelize');
 const { db_host, db_name, db_user, db_password, db_port } = require("../database/db_connection");
 const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}`);
 
+const jwt = require('jsonwebtoken');
+const signature = require('../server/jwt.js');
+
+
 /////ROUTES USERS/////
 //get all users
 router.get('/', (req, res) => {
@@ -23,7 +27,7 @@ router.get('/', (req, res) => {
     });
 }) 
 //post users
-router.post('/', checkEmptyFieldsUser, checkUsernameExistence, (req,res) => {
+router.post('/', checkUsernameExistence, checkEmptyFieldsUser, (req,res) => {
     const nuevoUsuario = req.body;
     db.query(
         `INSERT INTO users (
@@ -56,6 +60,31 @@ router.post('/', checkEmptyFieldsUser, checkUsernameExistence, (req,res) => {
             err: err
         });
     });
+})
+//login
+router.get('/login', loginCheck, accountState, (req, res) => {
+    const input = req.body;
+    db.query(
+        'SELECT * FROM users WHERE username = :username',{
+            type: db.QueryTypes.SELECT,
+            replacements: {username: input.username}
+        })
+        .then(response =>{
+            const data = response[0];
+            const token = createToken({
+                username: data.username,
+                user_id: data.user_id,
+                is_admin: data.is_admin,
+                is_active: data.is_active
+            });
+            res.status(200).json(token);
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+            });
+        });
 })
 
 //middlewares//////////////////////////////////
@@ -118,6 +147,59 @@ function checkUsernameExistence(req, res, next) {
             });
 }
 
+function loginCheck(req, res, next) {
+    const {username, password} = req.body;
+    db.query(
+        'SELECT * FROM users WHERE username = :username AND password = :password ',
+        {
+            type: db.QueryTypes.SELECT,
+            replacements: {username: username,
+                           password: password}
+        })  
+        .then(response => {
+            // response = response[0];
+
+            if(response.length == 0){
+                res.status(409).json({message: "Username or password invalid"})   
+            }else{
+                next();
+            }
+        })
+            .catch(err => {
+                res.status(500).json({
+                    mensaje: 'Ocurrió un error con la base de datos',
+                    err: err
+                });
+            });
+}
+
+function accountState(req, res, next){
+    const input = req.body;
+    db.query(
+        'SELECT is_active FROM users WHERE username = :username',{
+            type: db.QueryTypes.SELECT,
+            replacements: {username: input.username}
+        })
+        .then(response => {
+            const data = response[0];
+            console.log(data);
+            if(data.is_active == 1){
+                next();
+            }else{
+                res.status(409).json({message: "The account is disabled"});
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+            });
+    });
+}
+
+function createToken(info){
+    return jwt.sign(info, signature);
+}
 
 
 module.exports = router;

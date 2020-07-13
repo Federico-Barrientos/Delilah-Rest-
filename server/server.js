@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 //JSON Web Token
 const jwt = require('jsonwebtoken');
-const JWTSing = "Delilah_2020";
+const signature = require('../server/jwt.js');
 
 // DB Setup
 const Sequelize = require('sequelize');
