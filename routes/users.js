@@ -11,7 +11,7 @@ const signature = require('../server/jwt.js');
 
 /////ROUTES USERS/////
 //get all users
-router.get('/', (req, res) => {
+router.get('/', validateToken, (req, res) => {
     db.query(
         'SELECT username FROM users',{
             type: db.QueryTypes.SELECT
@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
         });
     });
 }) 
-//post users
+//create account
 router.post('/', checkUsernameExistence, checkEmptyFieldsUser, (req,res) => {
     const nuevoUsuario = req.body;
     db.query(
@@ -86,6 +86,7 @@ router.get('/login', loginCheck, accountState, (req, res) => {
             });
         });
 })
+//
 
 //middlewares//////////////////////////////////
 function checkIfIdExists (req, res, next) {
@@ -196,6 +197,36 @@ function accountState(req, res, next){
             });
     });
 }
+
+function validateToken(req, res, next){
+    headerExists = req.headers.authorization;
+    if(headerExists){
+        const token = req.headers.authorization.split(" ")[0];
+    
+        if(token == ""){
+            res.status(404).json({message: "You need to be logged to access"})
+        }else{
+            const verification = jwt.verify(token, signature);
+            db.query(
+                'SELECT * FROM users WHERE user_id = :id',{
+                    type: db.QueryTypes.SELECT,
+                    replacements:{id: verification.user_id}
+                })
+                .then(response =>{
+                    if(response.length == 0){
+                        res.status(404).json({message: "user not found"})
+                    }else{
+                        next();
+                    }
+                })
+        }
+    
+    }else{
+        res.status(404).json({message:"Unauthorized, please add the field authorization with your token in the header"})
+    }
+    
+}
+
 
 function createToken(info){
     return jwt.sign(info, signature);
