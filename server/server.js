@@ -5,10 +5,6 @@ const server = express ();
 //Body Parser
 const bodyParser = require('body-parser');
 
-//JSON Web Token
-const jwt = require('jsonwebtoken');
-const signature = require('../server/jwt.js');
-
 // DB Setup
 const Sequelize = require('sequelize');
 const { db_host, db_name, db_user, db_password, db_port } = require("../database/db_connection");
