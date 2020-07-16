@@ -1,103 +1,628 @@
-openapi: 3.0.2
-# Cabecera del documento.
+oopenapi: 3.0.1
 info:
   title: Delilah Restó
-  description: Tercer proyecto de la carrera DWFS de Acamica
+  description: Restaurant API
+  contact:
+    email: fgbarrientos@gmail.com
   version: 1.0.0
-# Fin cabecera del documento.
-
+externalDocs:
+  description: Github Repository
+  url: https://github.com/Federico-Barrientos/Delilah-Resto
 servers:
-- url: /myServer
+  - url: https://localhost:3000
 tags:
-- name: Users
-  description: Operations avalible on users
-- name: Products
-  description: Operations avalible on products
-- name: Orders
-  description: Operations avalible on orders
-
+  - name: User
+    description: Actions on users
+  - name: Products
+    description: Actions on products
+  - name: Orders
+    description: Action on orders
 
 paths:
   /users:
-    post:
+    get:
       tags:
-        - Users
-      summary: Create user
-      description: Creates a new User in the DataBase
+        - User
+      summary: All users(Admin) // User account(Not Admin)
+      description: Show all users if the request comes from an admin, otherwise returns the user account
+      operationId: showUsers
       responses:
         200:
-          description: User correctly added to database
+          description: "-"
+        401:
+          description: You need to be logged to access
+        404:
+          description: user not found
+        500:
+          description: An error with the database happened
+  
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: Creates a new User
+      operationId: createAccount
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security: []
+      responses:
+        201:
+          description: "The User: (name of the user) was succesfully created"
+        409:
+          description: "User already exists"
+        400:
+          description: "There are some fields that are empty, remember the fields needed are (username, fullname, email, phoneNumber, user_addres, password)"
+        500:
+          description: "An error with the database happened"
+
+
+  /users/login:
+    post:
+      tags:
+        - User
+      security: []
+      summary: Login
+      operationId: login
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        200:
+          description: "token"
+        409:
+          description: "Username or password invalid"
+        500:
+          description: "An error with the database happened"
+
+  /users/admin:
+    post:
+      tags:
+        - User
+      summary: create admin account
+      operationId: createAdmin
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        201:
+          description: "The admin: (username) was succesfully added to the database"
+        401:
+          description: "You don't have permission for this action"
+        500:
+          description: "An error with the database happened"
+
+
+
+    
+  /products:
+    get:
+      tags:
+        - Products
+      security: []
+      summary: Get list of all available products
+      description: Only the products that is_disable = false
+      operationId: showAvaliblesProducts
+      parameters:
+        - name: search
+          in: query
+          description: Keywords to search for
+          schema:
+            type: string
+      responses:
+        200:
+          description: "-"
+        404:
+          description: "You need to be logged to access"
+        500:
+          description: "An error with the database happened"
+
+    post:
+      tags:
+        - Products
+      summary: Adds a product (only Admin)
+      description: Adds a product to database
+      operationId: addProduct
+      requestBody:
+        description: Keywords to search for
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        200:
+          description: "The product (product name) has been added to the menu"
+        409:
+          description: "The product (product name) Already exists"
+        500:
+          description: "An error with the database happened"  
+
+  /products/:id:
+    get:
+      tags:
+        - Products
+      summary: Gets product by Id
+      description: Returns a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      operationId: getProductById
+      responses:
+        200:
+          description: "The product (product name) has been added to the menu"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        409:
+          description: "The product (product name) Already exists"
+        500:
+          description: "An error with the database happened"  
+
+    put:
+      tags:
+        - Products
+      summary: Edits product by Id
+      description: Edits a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product.
+          required: true
+          schema:
+            type: string
+      operationId: editProduct
+      requestBody:
+        description: Modification data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        200:
+          description: "The product (product name) has been updated"
+        404:
+          description: "The product you're looking for doesn't exist"
+        500:
+          description: "An error with the database happened"  
+
+    delete:
+      tags:
+        - Products
+      summary: Disables product
+      description: Disables a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product
+          required: true
+          schema:
+            type: string
+      operationId: disableProduct
+      responses:
+        200:
+          description: "The product (product name) has been disabled"
+        404:
+          description: "The product you're looking for doesn't exist"
+        500:
+          description: "An error with the database happened"  
+  
+  /products/admin:
+    get:
+        tags:
+          - Products
+        security: []
+        summary: Get list of all products
+        description: All the products
+        operationId: showAllProducts
+        parameters:
+          - name: search
+            in: query
+            description: Keywords to search for
+            schema:
+              type: string
+        responses:
+          200:
+            description: "-"
+          401:
+            description: "You don't have permission for this action"
+          500:
+            description: "An error with the database happened"
+
+  
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get list of orders
+      description: Returns a list of products. If user is admin returns a list of all orders, if user is not admin returns a list of their orders only.
+      operationId: getOrders
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    post:
+      tags:
+        - Orders
+      summary: Adds a product
+      description: Adds a product to database
+      operationId: addOrder
+      requestBody:
+        description: Order to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewOrder"
+        required: true
+      responses:
+        200:
+          description: Order modified succesfully
         400:
           description: Error validating input data
-        409:
-          description: Username already exists, please pick another
-  
-  
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /orders/:id:
+    get:
+      tags:
+        - Orders
+      summary: Gets product by Id (only Admin)
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the order that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      description: Returns a specific product detail, fetched by it's ID
+      operationId: getOrderById
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    put:
+      tags:
+        - Orders
+      summary: Gets product by Id (only Admin)
+      description: Edits a specific product
+      operationId: editOrder
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the order that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order to create
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderStatus:
+                  type: string
+                  example: delivered
+        required: true
+      responses:
+        200:
+          description: "Product with id {productId} modified correctly"
+        400:
+          description: Error validating input data
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        403:
+          description: The state given for the product is not valid
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
 
 components:
   schemas:
     User:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
-          example: 10
+          example: 1
         username:
-          type: string
-          example: FreddyMercury22
-        fullname:
-          type: string
-          example: Marcelo Gallardo
-        email:
-          type: string
-          example: Marcelo_31@riverplate.com
-        phone:
-          type: integer
-          example: 59089832
-        address:
-          type: string
-          example: Fake St 123, New Zeland
-        admin:
-          type: boolean
-          example: Is admin? (Y/N)
-    
-    Products:
+          type: "string"
+          example: FedeBarrientos
+        Fullname:
+          type: "string"
+          example: Federico Barrientos
+        Email:
+          type: "string"
+          example: fgbarrientos@gmail.com
+        PhoneNumber:
+          type: "string"
+          example: 3416625975
+        user_address:
+          type: "string"
+          example: San Lorenzo 4570
+        Password:
+          type: "string"
+          example: sarasa123
+   
+    Login:
+      type: "object"
+      properties:
+        Username:
+          type: "string"
+          example: FedeBarrientos
+        Password:
+          type: "string"
+          example: sarasa123
+   
+   
+   
+   
+   
+    UserInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          user_id:
+            type: integer
+            example: 1
+          username:
+            type: string
+            example: ghee_dough
+          full_name:
+            type: string
+            example: Guido Torres
+          email:
+            type: string
+            example: gheedough@gmail.com
+          phone:
+            type: integer
+            example: 5491122223333
+          delivery_address:
+            type: string
+            example: Fake St. 123
+          is_admin:
+            type: boolean
+            example: 0
+          is_disabled:
+            type: boolean
+            example: 0
+    Product:
       type: object
-      properties: 
-        id:
+      properties:
+        product_id:
           type: integer
-          example: 35
+          example: 1
         name:
           type: string
-          example: Cheese Burger
+          example: French Fries
         price:
-          type: integer
-          example: 250
+          type: number
+          example: 268.5
         img_url:
           type: string
-          example: https://i.pinimg.com/originals/8b/61/11/8b611136ead0d4c247f0fef92925f284.jpg
+          example: https://www.seriouseats.com/2018/04/20180309-french-fries-vicky-wasik-15-1500x1125.jpg
         description:
           type: string
-          example: A burger between two breads with a slice of cheese on top of it
-    
-    Orders:
+          example: 100gr of the best french fries
+            top with spices
+
+    Products:
+      type: array
+      items:
+        $ref: "#/components/schemas/Product"
+    OrderProduct:
+      type: object
+      properties:
+        order_prod_id:
+          type: integer
+          example: 104
+        order_id:
+          type: integer
+          example: 5
+        product_id:
+          type: integer
+          example: 70
+        product_amount:
+          type: integer
+          example: 70
+        name:
+          type: string
+          example: Avocado Toast
+        price:
+          type: number
+          example: 268.5
+        img_url:
+          type: string
+          example: https://via.placeholder.com/150
+        description:
+          type: string
+          example: A thick, crusty, toastd rye bread toast with an avocado mix on
+            top with spices
+        is_disabled:
+          type: boolean
+          example: 0
+    OrderProducts:
+      type: array
+      items:
+        $ref: "#/components/schemas/OrderProduct"
+    Order:
       type: object
       properties:
         order_id:
           type: integer
-          example: 12
-        order_status:
+          example: 1
+        status:
           type: string
-          example: on the way
+          example: new
+        date:
+          type: string
+          format: date-time
+          example: "2020-04-10T10:11:12Z"
         description:
           type: string
-          example: 1xChesseBurg
+          example: "1x AvoToast"
         payment_method:
           type: string
           example: cash
-        order_amount:
+        total:
           type: integer
-          example: 250
-          
+          example: 666
+        user_id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: gheedough
+        full_name:
+          type: string
+          example: "Guido Torres"
+        email:
+          type: string
+          example: gheedough@gmail.com
+        phone:
+          type: integer
+          example: 1122223333
+        delivery_address:
+          type: string
+          example: Calle Falsa 123
+        products:
+          $ref: "#/components/schemas/OrderProducts"
+    Orders:
+      type: array
+      items:
+        $ref: "#/components/schemas/Order"
+    NewOrder:
+      type: object
+      properties:
+        payment_method:
+          type: string
+          example: cash
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: integer
+                example: 1
+              amount:
+                type: integer
+                example: 3
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An error has ocurred: <error>"
+      required:
+        - error
+    Send:
+      type: string
+      example: "Error message"
+      
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # Reused Responses
+  responses:
+    UnauthorizedError:
+      description: Invalid Token
+    Disabled:
+      description: Invalid request, user account is disabled
+    NotAdmin:
+      description: Operation forbidden, not an admin
+    NotFound:
+      description: The specified resource was not found
+    Default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/Send"
+          examples:
+            Token Invalidation:
+              summary: Unauthorized - Invalid Token
+              value: Unauthorized - Invalid Token
+            Disabled Account:
+              summary: Unauthorized - Account is Disabled
+              value: Unauthorized - User account is disabled
+    UnauthorizedAdmin:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/Send"
+          examples:
+            Token Invalidation:
+              summary: Unauthorized - Invalid Token
+              value: Unauthorized - Invalid Token
+            Disabled Account:
+              summary: Unauthorized - Account is Disabled
+              value: Unauthorized - User account is disabled
+            Not Admin:
+              summary: Unauthorized - Not an admin
+              value: Unauthorized - Not an admin
+
+security:
+  - bearerAuth: []
         
 
