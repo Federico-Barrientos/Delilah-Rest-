@@ -134,7 +134,7 @@ controller.getOrders = (req, res) => {
             const response = [];
             
             rawResponse.forEach(rawItem => {
-                const orderItem = response.find(item => item.id === rawItem.id);
+                const orderItem = response.find(item => item.order_id === rawItem.order_id);
                 if (orderItem) {
                     orderItem.products.push(productItem(rawItem))
                 } else {
@@ -159,13 +159,13 @@ controller.getOrders = (req, res) => {
 ///utils
 const createOrderItem = (rawItem) => {
     return {
-        id: rawItem.order_id,
+        order_id: rawItem.order_id,
         state: rawItem.order_state,
         description: rawItem.order_description,
-        payment: [
-            method = rawItem.payment_method,
-            total = rawItem.payment_amount
-        ],
+        payment: {
+            method : rawItem.payment_method,
+            total : rawItem.payment_amount
+        },
         user: {
             id: rawItem.user_id,
             username: rawItem.username,
