@@ -10,6 +10,8 @@ const middle = require('../middlewares/middlewares');
 
 router.get('/', middle.validateToken , controller.getOrders);
 
+router.get('/:id', middle.isAdmin , controller.getOrders);
+
 router.post('/',middle.validateToken, middle.ProductsIdExistOrder, controller.createOrder);
 
 router.put('/:id', middle.isAdmin, controller.EditOrderState);

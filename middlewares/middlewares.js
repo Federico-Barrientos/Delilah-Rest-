@@ -285,6 +285,11 @@ middle.isAdmin = (req, res, next) => {
                 if(verification.is_admin == 0){
                     res.status(404).json({message: "You don't have permission for this action"})
                 }else{
+                    req.locals = {
+                        ...req.locals,
+                        idUser: verification.user_id,
+                        isAdmin: verification.is_admin
+                    }
                     next();
                 }        
         }

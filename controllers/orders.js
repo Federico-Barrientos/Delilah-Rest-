@@ -106,10 +106,10 @@ controller.getOrders = (req, res) => {
     const { idUser, isAdmin } = req.locals;
     const conditions = {};
     if (!isAdmin) {
-        conditions['u.id'] = idUser;
+        conditions['u.user_id'] = idUser;
     }
     if (idOrder) {
-        conditions['o.id'] = idOrder;
+        conditions['o.order_id'] = idOrder;
     }
     const WHERE = getWhereClause(conditions); 
     db.query(`
