@@ -31,27 +31,27 @@ CREATE TABLE products (
 );
 
 CREATE TABLE orders (
-    order_id INT PRIMARY KEY,
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
     order_state VARCHAR (50) NOT NULL,
     order_date DATETIME NOT NULL,
     order_description VARCHAR(255) NOT NULL,
     payment_method VARCHAR (70) NOT NULL,
     payment_amount FLOAT NOT NULL,
-    user_id INT NOT NULL DEFAULT "0",
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    user_id INT NOT NULL
+    -- FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE orders_products (
-    order_product_id INT PRIMARY KEY AUTO_INCREMENT,
-    order_id INT,
-    product_id INT,
+    order_product_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    product_id INT NOT NULL,
+    order_id INT NOT NULL,
+    product_price INT NOT NULL,
     product_amount INT NOT NULL,
-    product_price FLOAT NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders (order_id),
-    FOREIGN KEY (product_id) REFERENCES products (product_id)
+    total INT NOT NULL
 );
 
 -- populate tables
+--users
 INSERT INTO users
   (user_id, username, fullname, email, phoneNumber, user_address, password, is_admin)
 VALUE
@@ -76,6 +76,7 @@ VALUE
     FALSE
    );
  
+ --products
  INSERT INTO products (name, price, description, img_url)
  VALUE(
      "French Fries",
@@ -88,3 +89,15 @@ VALUE
     "A simple chesee burger with chesee (?)",
     "https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg"
  );
+
+ --order
+
+ INSERT INTO orders (order_state, order_date, order_description, payment_method, payment_amount , user_id)
+ VALUE(
+     "delivered",
+     NOW(),
+     "1x Hambur, 2xPapas",
+     "cash",
+     500,
+     1
+ )

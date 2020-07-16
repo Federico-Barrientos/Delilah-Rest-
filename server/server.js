@@ -13,6 +13,7 @@ const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port
 //connection to the files where the routes are in it
 const products = require('../routes/products.js');
 const users = require('../routes/users');
+const orders = require('../routes/orders');
 
 ////////SERVER////////////////
 //initialize the server
@@ -22,9 +23,10 @@ server.listen(3000, () => {
 })
 //general middlewares
 server.use(bodyParser.json());
+
 //routes handler
 server.use('/products', products);
 server.use('/users', users);
-
+server.use('/orders', orders);
 
 

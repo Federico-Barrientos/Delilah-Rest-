@@ -102,6 +102,35 @@ controller.createAccount = (req, res) => {
     });
 }
 
+controller.createAdmin = (req, res) => {
+    const nuevoUsuario = req.body;
+    db.query(
+        `INSERT INTO users (
+            username,
+            password,
+            is_admin
+        )
+        VALUE (
+            :username,
+            :password,
+            1
+        )`,
+        {
+            replacements: nuevoUsuario
+        }
+    ).then(() => {
+        res.status(201).json({
+            mensaje: 'The admin: ' + nuevoUsuario.username + ' was succesfully added to the database'
+        });
+    })
+    .catch(err => {
+        res.status(500).json({
+            mensaje: 'An error with the database happened',
+            err: err
+        });
+    });
+}
+
 controller.login = (req, res) => {
     const input = req.body;
     console.log("HOLAAAAA " + input.username);

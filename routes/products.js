@@ -17,19 +17,19 @@ const middle = require('../middlewares/middlewares');
 router.get('/', middle.validateToken, controller.showAllProducts);
 
 //get all products(only admin)
-router.get('/allProducts', controller.showAvaliblesProducts);
+router.get('/allProducts',middle.isAdmin, controller.showAvaliblesProducts);
 
 //get one product by id
 router.get('/:id',middle.validateToken, controller.showProductById);
 
 //post a new product
-router.post('/', middle.checkEmptyFields, middle.validateInfoProduct, controller.addProduct);
+router.post('/', middle.isAdmin, middle.checkEmptyFields, middle.validateInfoProduct, controller.addProduct);
 
 //update a existing product
-router.put('/:id', middle.checkIfProductExists, middle.checkEmptyFields, controller.editProduct);
+router.put('/:id', middle.isAdmin, middle.checkIfProductExists, middle.checkEmptyFields, controller.editProduct);
 
 //Disable a product
-router.delete('/:id', middle.checkIfProductExists, controller.disableProduct);
+router.delete('/:id', middle.isAdmin, middle.checkIfProductExists, controller.disableProduct);
 
  
 

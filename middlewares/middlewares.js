@@ -108,8 +108,21 @@ middle.checkEmptyFieldsUser = (req, res, next) => {
     }
 }
 
+middle.checkEmptyFieldsAdmin = (req, res, next) => {
+    const fields = req.body;
+    
+    if(!fields.username || !fields.password){
+        res.status(400).json({
+            message: "There are some fields that are empty, remember the fields needed are (username, password)"
+        })
+    }else{
+        next();
+    }
+}
+
 middle.checkUsernameExistence = (req, res, next) => {
     const fields = req.body;
+    
     db.query(
         'SELECT * FROM users WHERE username = :username ',
         {
@@ -117,8 +130,6 @@ middle.checkUsernameExistence = (req, res, next) => {
             replacements: {username: fields.username}
         })
         .then(response => {
-            // response = response[0];
-
             if(response.length !== 0){
                 res.status(409).json({message: "User already exists"})   
             }else{
@@ -186,9 +197,6 @@ middle.validateToken = (req, res, next) => {
     if(headerExists){
         const token = req.headers.authorization.split(" ")[0];
     
-        if(token == ""){
-            res.status(404).json({message: "You need to be logged to access"})
-        }else{
             const verification = jwt.verify(token, signature);
             db.query(
                 'SELECT * FROM users WHERE user_id = :id',{
@@ -201,11 +209,9 @@ middle.validateToken = (req, res, next) => {
                     }else{
                         next();
                     }
-                })
-        }
-    
+                })    
     }else{
-        res.status(404).json({message:"Unauthorized, please add the field authorization with your token in the header"})
+        res.status(404).json({message:"You need to be logged to access"})
     }
 }
 
@@ -233,6 +239,94 @@ middle.checkIfUsernameExists = (req, res, next) => {
             }
         })
 }
+
+//Orders
+
+
+middle.ProductsIdExistCreateOrder = (req, res, next) => {
+    const productsArray = req.body.products;
+    const productsIds = productsArray.map(product => product.product_id);
+        console.log(productsIds);
+
+    const productsWhere = `WHERE ${productsIds.map(productId => `product_id=${productId}`).join(' OR ')}`;
+    db.query(`SELECT * FROM products ${productsWhere}`, {
+            type: db.QueryTypes.SELECT
+        })
+        .then(products => {
+            if (products.length !== productsArray.length) {
+                res.status(404).json({
+                    response: {
+                        message: 'One or more products not found',
+                    }
+                });
+            } else {
+                //guardo en req.locals los id de los productos que forman parte de la orden 
+                req.locals = {
+                    ...req.locals,
+                    products
+                }
+                next();
+            }
+        })
+        .catch(err => res.status(500).json(err))
+}
+
+middle.both = (req, res, next) => {
+    try {
+        const token = req.headers.authorization;
+        const verification = jwt.verify(token, signature);
+        // console.log(verification.is_admin);
+        if(verification.is_admin === 1){
+            req.locals = {
+                ...req.locals,
+                idUser: verification.user_id,
+                isAdmin: verification.is_admin
+            }
+            // console.log("holis");
+            next();
+        }
+        // const tokenVerified = JWT.verify(token, JWTSign, (err, decoded) => {
+        //     if (err) {
+        //         console.log(err)
+        //         return res.status(403).json({ success: false, message: 'Failed to authenticate token.' });    
+        //     } else {
+        //         //decoded contine la información almacenada en el token verificado
+        //         if (decoded.is_admin === 0 || decoded.is_admin === 1){
+        //             req.locals = {
+        //                 ...req.locals,
+        //                 idUser: decoded.user_id,
+        //                 isAdmin: !!decoded.is_admin
+        //             }
+        //             next();
+        //         }
+                else {
+                    res.status(403).json({error})
+                }
+            }     
+    catch {(err) => catchAuthError(res, err)} 
+};
+//Global middlewares
+
+middle.isAdmin = (req, res, next) => {
+    const headerExists = req.headers.authorization;
+    if(headerExists){
+        const token = req.headers.authorization.split(" ")[0];
+    
+        if(token == ""){
+            res.status(404).json({message: "You need to be logged to access"})
+        }else{
+                const verification = jwt.verify(token, signature);
+                if(verification.is_admin == 0){
+                    res.status(404).json({message: "You don't have permission for this action"})
+                }else{
+                    next();
+                }        
+        }
+        }else{
+        res.status(404).json({message:"Unauthorized, please add the field authorization with your token in the header"})
+    }
+}
+
  //utils
 
 function createToken(input){
