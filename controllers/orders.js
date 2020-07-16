@@ -100,4 +100,108 @@ controller.EditOrderState = (req, res) => {
             });
         });
 }
+
+controller.getOrders = (req, res) => {
+    const idOrder = req.params.id;
+    const { idUser, isAdmin } = req.locals;
+    const conditions = {};
+    if (!isAdmin) {
+        conditions['u.id'] = idUser;
+    }
+    if (idOrder) {
+        conditions['o.id'] = idOrder;
+    }
+    const WHERE = getWhereClause(conditions); 
+    db.query(`
+            SELECT 
+                o.order_id, o.order_state, o.order_date, o.order_description, o.payment_method, o.payment_amount, o.updatedAt,
+                u.user_id as user_id, u.username, u.fullname, u.user_address, u.email, u.phoneNumber,
+                p.product_id as product_id, p.name, op.product_price, op.product_amount, op.total
+            FROM 
+                orders o
+            INNER JOIN 
+                users u ON u.user_id = o.user_id
+            INNER JOIN
+                orders_products op ON op.order_id = o.order_id
+            INNER JOIN 
+                products p ON p.product_id = op.product_id
+            ${WHERE}
+        `, {   
+            type: db.QueryTypes.SELECT
+        })
+        .then(rawResponse => {
+            const response = [];
+            
+            rawResponse.forEach(rawItem => {
+                const orderItem = response.find(item => item.id === rawItem.id);
+                console.log(orderItem);
+                if (orderItem) {
+                    orderItem.products.push(productItem(rawItem))
+                } else {
+                    response.push(createOrderItem(rawItem))
+                }
+            });
+            res.status(200).json(
+                idOrder ? (response[0] || null) : response
+                
+            );
+            // console.log(response[2]);
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+            });
+        });
+}
+
+
+///utils
+const createOrderItem = (rawItem) => {
+    return {
+        id: rawItem.order_id,
+        state: rawItem.order_state,
+        description: rawItem.order_description,
+        payment: [
+            method = rawItem.payment_method,
+            total = rawItem.payment_amount
+        ],
+        user: {
+            id: rawItem.user_id,
+            username: rawItem.username,
+            fullname: rawItem.fullname,
+            address: rawItem.user_address,
+            email: rawItem.email,
+            phoneNumber: rawItem.phoneNumber
+        },
+        products: [productItem(rawItem)],
+        createdAt: rawItem.order_date,
+        updatedAt: rawItem.updatedAt
+    };
+};
+
+
+const productItem = (rawItem) => {
+    return {
+        id: rawItem.product_id,
+        name: rawItem.name,
+        price: rawItem.price,
+        amount: rawItem.product_amount,
+        subtotal: rawItem.total
+    };
+};
+
+const getWhereClause = (conditions) => {
+    const keys = Object.keys(conditions);
+    if (keys.length) {
+        const whereClauses = keys.map(key => {
+            return `${key}=${conditions[key]}`;
+        });
+        return `WHERE ${whereClauses.join(' AND ')}`;
+    } else {
+        return '';
+    }
+}
+
+
 module.exports = controller;
