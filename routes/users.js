@@ -19,7 +19,8 @@ router.get('/login', middle.loginCheck, middle.accountState, controller.login);
 router.post('/', middle.checkUsernameExistence, middle.checkEmptyFieldsUser, controller.createAccount);
 
 //create admin account
-router.post('/admin', middle.checkUsernameExistence, middle.checkEmptyFieldsAdmin, controller.createAdmin);
+router.post('/admin', middle.isAdmin, middle.checkUsernameExistence, middle.checkEmptyFieldsAdmin, controller.createAdmin);
+
 
 
 

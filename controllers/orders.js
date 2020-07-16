@@ -130,11 +130,11 @@ controller.getOrders = (req, res) => {
             type: db.QueryTypes.SELECT
         })
         .then(rawResponse => {
+            console.log(rawResponse);
             const response = [];
             
             rawResponse.forEach(rawItem => {
                 const orderItem = response.find(item => item.id === rawItem.id);
-                console.log(orderItem);
                 if (orderItem) {
                     orderItem.products.push(productItem(rawItem))
                 } else {
