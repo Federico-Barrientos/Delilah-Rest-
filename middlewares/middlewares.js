@@ -192,28 +192,6 @@ middle.accountState = (req, res, next) => {
     });
 }
 
-middle.validateToken = (req, res, next) => {
-    const headerExists = req.headers.authorization;
-    if(headerExists){
-        const token = req.headers.authorization.split(" ")[0];
-    
-            const verification = jwt.verify(token, signature);
-            db.query(
-                'SELECT * FROM users WHERE user_id = :id',{
-                    type: db.QueryTypes.SELECT,
-                    replacements:{id: verification.user_id}
-                })
-                .then(response =>{
-                    if(response.length == 0){
-                        res.status(404).json({message: "user not found"})
-                    }else{
-                        next();
-                    }
-                })    
-    }else{
-        res.status(404).json({message:"You need to be logged to access"})
-    }
-}
 
 middle.checkIfUsernameExists = (req, res, next) => {
 
@@ -243,7 +221,7 @@ middle.checkIfUsernameExists = (req, res, next) => {
 //Orders
 
 
-middle.ProductsIdExistCreateOrder = (req, res, next) => {
+middle.ProductsIdExistOrder = (req, res, next) => {
     const productsArray = req.body.products;
     const productsIds = productsArray.map(product => product.product_id);
         console.log(productsIds);
@@ -271,40 +249,28 @@ middle.ProductsIdExistCreateOrder = (req, res, next) => {
         .catch(err => res.status(500).json(err))
 }
 
-middle.both = (req, res, next) => {
-    try {
-        const token = req.headers.authorization;
-        const verification = jwt.verify(token, signature);
-        // console.log(verification.is_admin);
-        if(verification.is_admin === 1){
-            req.locals = {
-                ...req.locals,
-                idUser: verification.user_id,
-                isAdmin: verification.is_admin
-            }
-            // console.log("holis");
-            next();
-        }
-        // const tokenVerified = JWT.verify(token, JWTSign, (err, decoded) => {
-        //     if (err) {
-        //         console.log(err)
-        //         return res.status(403).json({ success: false, message: 'Failed to authenticate token.' });    
-        //     } else {
-        //         //decoded contine la información almacenada en el token verificado
-        //         if (decoded.is_admin === 0 || decoded.is_admin === 1){
-        //             req.locals = {
-        //                 ...req.locals,
-        //                 idUser: decoded.user_id,
-        //                 isAdmin: !!decoded.is_admin
-        //             }
-        //             next();
-        //         }
-                else {
-                    res.status(403).json({error})
-                }
-            }     
-    catch {(err) => catchAuthError(res, err)} 
-};
+// middle.both = (req, res, next) => {
+//     try {
+//         const token = req.headers.authorization;
+//         const verification = jwt.verify(token, signature);
+//         if(verification.is_admin === 1){
+//             req.locals = {
+//                 ...req.locals,
+//                 idUser: verification.user_id,
+//                 isAdmin: verification.is_admin
+//             }
+//             next();
+//         }else {res.status(403).json({error})}
+//     }     
+//     catch {(err) =>
+//         res.status(500).json({
+//             mensaje: 'Ocurrió un error con la base de datos',
+//             err: err
+//         });
+//     };
+// };
+
+
 //Global middlewares
 
 middle.isAdmin = (req, res, next) => {
@@ -324,6 +290,35 @@ middle.isAdmin = (req, res, next) => {
         }
         }else{
         res.status(404).json({message:"Unauthorized, please add the field authorization with your token in the header"})
+    }
+}
+
+
+middle.validateToken = (req, res, next) => {
+    const headerExists = req.headers.authorization;
+    if(headerExists){
+        const token = req.headers.authorization.split(" ")[0];
+    
+            const verification = jwt.verify(token, signature);
+            db.query(
+                'SELECT * FROM users WHERE user_id = :id',{
+                    type: db.QueryTypes.SELECT,
+                    replacements:{id: verification.user_id}
+                })
+                .then(response =>{
+                    if(response.length == 0){
+                        res.status(404).json({message: "user not found"})
+                    }else{
+                        req.locals = {
+                            ...req.locals,
+                            idUser: verification.user_id,
+                            isAdmin: verification.is_admin
+                        }
+                        next();
+                    }
+                })    
+    }else{
+        res.status(404).json({message:"You need to be logged to access"})
     }
 }
 

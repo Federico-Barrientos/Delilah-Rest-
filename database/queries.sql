@@ -37,8 +37,8 @@ CREATE TABLE orders (
     order_description VARCHAR(255) NOT NULL,
     payment_method VARCHAR (70) NOT NULL,
     payment_amount FLOAT NOT NULL,
+    updatedAt DATETIME,
     user_id INT NOT NULL
-    -- FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE orders_products (

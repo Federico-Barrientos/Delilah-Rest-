@@ -7,34 +7,24 @@ const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port
 const jwt = require('jsonwebtoken');
 const signature = require('../server/jwt.js');
 
-const catchSQLError = (res, err) => {
-    console.log(err)
-    res.status(500).json({
-        mensaje : "Ocurrio un error",
-        error: err
-   });
-};
-
-
-
 controller.createOrder = (req, res) => {
-    const productsArray = req.body.products; //me guarde array con id de productos a incluir en la order y la cantidad de cada uno
+    const productsArray = req.body.products; 
     const paymentMethod = req.body.payment_method;
-    const idUser = req.locals.idUser; //guardo id del usuario que este haciendo la orden desde su token
-    const products = req.locals.products; //tengo un array con los ids que guarde en req.locals en validation.ProductsIdExistCreateOrder
-    // console.log(products);
+    const idUser = req.locals.idUser; 
+    const products = req.locals.products; 
+
     let description = [];
     let paymentValue = 0;
+
     products.forEach(product => {
-        const reqProduct = productsArray.find(p => p.product_id === product.product_id); //busco para cada id guardado en products ese mismo id en productsArray donde también tengo guardada la cantidad de cada prodcuto
+        const reqProduct = productsArray.find(p => p.product_id === product.product_id); 
         product.product_amount = reqProduct.product_amount;
         console.log(reqProduct);
         product.subtotal = product.price * product.product_amount;
-        paymentValue += product.subtotal; //calculo el total a pagar por la orden 
-        description.push(`${reqProduct.product_amount}x ${product.name}`); //armo un array description con información de cada producto
+        paymentValue += product.subtotal; 
+        description.push(`${reqProduct.product_amount}x ${product.name}`);
     });
-    console.log(parseInt(paymentValue));
-    //valores a cargar en tabla Orderes de el nuevo pedido 
+    
     const replacements = {
         idUser: idUser,
         state: 'nuevo',
@@ -56,7 +46,7 @@ controller.createOrder = (req, res) => {
             .query(`
                 INSERT INTO orders_products (product_id, order_id, product_price, product_amount, total)
                 VALUES ${values.join(',')}
-            `) //hago un bulk upload para cargar también la tabla orders_products con la información necesaria de la orden que esta siendo procesada
+            `) 
             .then(() => {
                 res.status(201).json({
                     response: {
@@ -65,8 +55,49 @@ controller.createOrder = (req, res) => {
                     }
                 });
             })
-            .catch(err => catchSQLError(res, err))
-    }).catch(err => catchSQLError(res, err))
+            .catch(err => {
+                res.status(500).json({
+                    mensaje: 'Ocurrió un error con la base de datos',
+                    err: err
+                });
+            });
+    }).catch(err => {
+        res.status(500).json({
+            mensaje: 'Ocurrió un error con la base de datos',
+            err: err
+        });
+    });
 }
 
+controller.EditOrderState = (req, res) => {
+    const id = req.params.id;
+    const newState = req.body.newState;
+    const updatedAt = new Date();
+    db.query(
+        'SELECT * FROM orders WHERE order_id = :id',{
+            type: db.QueryTypes.SELECT,
+            replacements: {id: id}
+        })
+        .then(response => {
+            
+            if(response.length === 0){
+                res.status(404).json({message: "The order you're looking for does not exists"})
+            }else{
+                const idOrder = response[0].order_id;
+                db.query(
+                    'UPDATE orders SET order_state = :state, updatedAt = :updatedAt WHERE order_id = :id',{
+                        replacements:{state: newState, updatedAt: updatedAt, id: idOrder}
+                    })
+                    .then(response => {
+                        res.status(202).json({message: "The order was succesfully Edited"})
+                    })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+            });
+        });
+}
 module.exports = controller;

@@ -8,7 +8,8 @@ const db = new Sequelize(`mysql://${db_user}:${db_password}@${db_host}:${db_port
 const controller = require('../controllers/orders');
 const middle = require('../middlewares/middlewares');
 
-router.post('/',middle.both, middle.ProductsIdExistCreateOrder, controller.createOrder);
+router.post('/',middle.validateToken, middle.ProductsIdExistOrder, controller.createOrder);
 
+router.put('/:id', middle.isAdmin, controller.EditOrderState);
 
 module.exports = router;
