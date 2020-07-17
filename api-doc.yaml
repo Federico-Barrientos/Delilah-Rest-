@@ -1,103 +1,490 @@
-openapi: 3.0.2
-# Cabecera del documento.
+openapi: 3.0.1
 info:
-  title: Delilah Restó
-  description: Tercer proyecto de la carrera DWFS de Acamica
+  title: Delilah Resto
+  description: Restaurant API.
+  contact:
+    email: fgbarrientos93@gmail.com
   version: 1.0.0
-# Fin cabecera del documento.
-
+externalDocs:
+  description: Github Repository
+  url: https://github.com/federico-barrientos/Delilah-Resto
 servers:
-- url: /myServer
+  - url: https://localhost:3000/
 tags:
-- name: Users
-  description: Operations avalible on users
-- name: Products
-  description: Operations avalible on products
-- name: Orders
-  description: Operations avalible on orders
-
+  - name: User
+    description: Actions on users
+  - name: Products
+    description: Actions on products
+  - name: Orders
+    description: Action on orders
 
 paths:
   /users:
-    post:
+    get:
       tags:
-        - Users
-      summary: Create user
-      description: Creates a new User in the DataBase
+        - User
+      summary: All users(Admin) // User account(Not Admin)
+      description: Show all users if the request comes from an admin, otherwise returns the user account
+      operationId: showUsers
       responses:
         200:
-          description: User correctly added to database
-        400:
-          description: Error validating input data
+          description: "-"
+        401:
+          description: You need to be logged to access
+        404:
+          description: user not found
+        500:
+          description: An error with the database happened
+  
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: Creates a new User
+      operationId: createAccount
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security: []
+      responses:
+        201:
+          description: "The User: (name of the user) was succesfully created"
         409:
-          description: Username already exists, please pick another
+          description: "User already exists"
+        400:
+          description: "There are some fields that are empty, remember the fields needed are (username, fullname, email, phoneNumber, user_addres, password)"
+        500:
+          description: "An error with the database happened"
+
+
+  /users/login:
+    post:
+      tags:
+        - User
+      security: []
+      summary: Login
+      operationId: login
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        200:
+          description: "token"
+        409:
+          description: "Username or password invalid"
+        500:
+          description: "An error with the database happened"
+
+  /users/admin:
+    post:
+      tags:
+        - User
+      summary: create admin account
+      operationId: createAdmin
+      requestBody:
+        description: Object expected
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        201:
+          description: "The admin: (username) was succesfully added to the database"
+        401:
+          description: "You don't have permission for this action"
+        500:
+          description: "An error with the database happened"
+
+
+    
+  /products:
+    get:
+      tags:
+        - Products
+      security: []
+      summary: Get list of all available products
+      description: Only the products that is_disable = false
+      operationId: showAvaliblesProducts
+      parameters:
+        - name: search
+          in: query
+          description: Keywords to search for
+          schema:
+            type: string
+      responses:
+        200:
+          description: "-"
+        404:
+          description: "You need to be logged to access"
+        500:
+          description: "An error with the database happened"
+
+    post:
+      tags:
+        - Products
+      summary: Adds a product (only Admin)
+      description: Adds a product to database
+      operationId: addProduct
+      requestBody:
+        description: Keywords to search for
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        200:
+          description: "The product (product name) has been added to the menu"
+        409:
+          description: "The product (product name) Already exists"
+        500:
+          description: "An error with the database happened"  
+
+  /products/:id:
+    get:
+      tags:
+        - Products
+      summary: Gets product by Id
+      description: Returns a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      operationId: getProductById
+      responses:
+        200:
+          description: "The product (product name) has been added to the menu"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        409:
+          description: "The product (product name) Already exists"
+        500:
+          description: "An error with the database happened"  
+
+    put:
+      tags:
+        - Products
+      summary: Edits product by Id
+      description: Edits a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product.
+          required: true
+          schema:
+            type: string
+      operationId: editProduct
+      requestBody:
+        description: Modification data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        200:
+          description: "The product (product name) has been updated"
+        404:
+          description: "The product you're looking for doesn't exist"
+        500:
+          description: "An error with the database happened"  
+
+    delete:
+      tags:
+        - Products
+      summary: Disables product
+      description: Disables a specific product
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product
+          required: true
+          schema:
+            type: string
+      operationId: disableProduct
+      responses:
+        200:
+          description: "The product (product name) has been disabled"
+        404:
+          description: "The product you're looking for doesn't exist"
+        500:
+          description: "An error with the database happened"  
   
+  /products/admin:
+    get:
+        tags:
+          - Products
+        security: []
+        summary: Get list of all products
+        description: All the products
+        operationId: showAllProducts
+        parameters:
+          - name: search
+            in: query
+            description: Keywords to search for
+            schema:
+              type: string
+        responses:
+          200:
+            description: "-"
+          401:
+            description: "You don't have permission for this action"
+          500:
+            description: "An error with the database happened"
+
   
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Get list of orders
+      description: Returns a list of orders
+      operationId: getOrders
+      responses:
+          200:
+            description: "-"
+          401:
+            description: "You need to be logged"
+          500:
+            description: "An error with the database happened"        
+    post:
+      tags:
+        - Orders
+      summary: Adds a product
+      description: Adds a product to database
+      operationId: addOrder
+      requestBody:
+        description: Order to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewOrder"
+        required: true
+      responses:
+        200: 
+          description: "-"
+        402:
+          description: "You need to be logged"
+        500:
+         description: "An error with the database happened"            
+
+
+  /orders/:id:
+    get:
+      tags:
+        - Orders
+      summary: Gets order by id
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the order
+          required: true
+          schema:
+            type: string
+      description: Returns a specefic order
+      operationId: getOrder
+      responses:
+        200: 
+          description: "-"
+        404:
+          description: "The order you're looking for doesn't exist"
+        500:
+         description: "An error with the database happened"      
+
+    put:
+      tags:
+        - Orders
+      summary: Gets order by Id
+      description: Edits a specific order
+      operationId: editOrder
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the order
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order to create
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_status:
+                  type: string
+                  example: delivered
+        required: true
+      responses:
+        200: 
+          description: "-"
+        404:
+          description: "The order you're looking for doesn't exist"
+        500:
+         description: "An error with the database happened"      
 
 components:
   schemas:
     User:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
-          example: 10
+          example: 1
         username:
-          type: string
-          example: FreddyMercury22
-        fullname:
-          type: string
-          example: Marcelo Gallardo
-        email:
-          type: string
-          example: Marcelo_31@riverplate.com
-        phone:
-          type: integer
-          example: 59089832
-        address:
-          type: string
-          example: Fake St 123, New Zeland
-        admin:
-          type: boolean
-          example: Is admin? (Y/N)
-    
+          type: "string"
+          example: FedeBarrientos
+        Fullname:
+          type: "string"
+          example: Federico Barrientos
+        Email:
+          type: "string"
+          example: fgbarrientos@gmail.com
+        PhoneNumber:
+          type: "string"
+          example: 3416625975
+        user_address:
+          type: "string"
+          example: San Lorenzo 4570
+        Password:
+          type: "string"
+          example: sarasa123
+   
+    Login:
+      type: "object"
+      properties:
+        Username:
+          type: "string"
+          example: FedeBarrientos
+        Password:
+          type: "string"
+          example: sarasa123
+          
     Products:
       type: object
-      properties: 
-        id:
+      properties:
+        product_id:
           type: integer
-          example: 35
-        name:
-          type: string
-          example: Cheese Burger
+          example: 2
         price:
           type: integer
-          example: 250
+          example: 150
+        name:
+          type: string
+          example: Burger
         img_url:
           type: string
-          example: https://i.pinimg.com/originals/8b/61/11/8b611136ead0d4c247f0fef92925f284.jpg
+          example: https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg
         description:
           type: string
-          example: A burger between two breads with a slice of cheese on top of it
-    
-    Orders:
+          example: A standard burger
+        is_disabled:
+          type: boolean
+          example: 1
+          
+    OrderProduct:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          example: 70
+        product_amount:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: Burger
+        price:
+          type: number
+          example: 150
+        img_url:
+          type: string
+          example: https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg
+        description:
+          type: string
+          example: A standard burger
+        is_disabled:
+          type: boolean
+          example: 
+          
+ 
+    Order:
       type: object
       properties:
         order_id:
           type: integer
-          example: 12
+          example: 1
         order_status:
           type: string
-          example: on the way
-        description:
+          example: new
+        order_date:
           type: string
-          example: 1xChesseBurg
+          format: date-time
+          example: "2020-07-16 T10:11:12Z"
+        order_description:
+          type: string
+          example: "1x Burger"
         payment_method:
           type: string
           example: cash
-        order_amount:
+        total:
           type: integer
-          example: 250
-          
+          example: 555
+        user_id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: FedeBarrientos
+        fullname:
+          type: string
+          example: Federico Barrientos
+        email:
+          type: string
+          example: fgbarrientos93@gmail.com
+        phoneNumber:
+          type: integer
+          example: 3416123456
+        delivery_address:
+          type: string
+          example: San Lorenzo 123
+        products:
+          $ref: "#/components/schemas/OrderProducts"
+
+    NewOrder:
+      type: object
+      properties:
+        payment_method:
+          type: string
+          example: cash
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: integer
+                example: 1
+              amount:
+                type: integer
+                example: 3
+  
+
+security:
+  - bearerAuth: []
         
 
