@@ -249,6 +249,30 @@ middle.ProductsIdExistOrder = (req, res, next) => {
         .catch(err => res.status(500).json(err))
 }
 
+middle.orderExists = (req, res, next) => {
+    const order = req.params.id;
+
+
+    db.query(
+        'SELECT * FROM orders WHERE order_id = :id',{
+            type: db.QueryTypes.SELECT,
+            replacements: {
+                id: order
+            }
+        })
+        .then(response => {
+            if(response.length == 0){
+                res.status(404).json({
+                    message: "The order you're looking for doesn't exist" 
+                })
+            }
+            else{
+                next();
+            }
+        })
+}
+
+
 
 //Global middlewares
 

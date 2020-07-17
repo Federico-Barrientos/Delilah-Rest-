@@ -22,6 +22,7 @@ npm install
 - Abrir XAMPP e inicializar los servidores Apache y MySQL (asegurarse que el puerto de MySQL sea el 3306)
 - Ingrear al panel de control de MySQl (http://localhost/phpmyadmin)
 - En la solapa SQL ejecutar el contenido del archivo (database/queries.sql)
+- El usuario es 'root' y no hay contraseña, de ser necesario se puede editar en (database/db_connection.js)
 
 ### Iniciar el servidor
 

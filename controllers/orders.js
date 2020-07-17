@@ -155,6 +155,37 @@ controller.getOrders = (req, res) => {
         });
 }
 
+controller.deleteOrder = (req, res) => {
+    let id = req.params.id;
+    // id = parseInt(id);
+    db.query(
+        'DELETE FROM orders WHERE order_id = :id',{
+            replacements: {id : id}
+        }).then(response => {
+            if(response.length === 0){
+                res.status(404).json({message: "order not found"})
+            }else{
+                db.query(
+                    'DELETE FROM orders_products WHERE order_id = :id',{
+                        replacements: {id: id}
+                    }).then(() => {
+                        res.status(200).json({message: "order succesfully deleted"})
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            mensaje: 'Ocurrió un error con la base de datos',
+                            err: err
+                        });
+                    }); 
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                mensaje: 'Ocurrió un error con la base de datos',
+                err: err
+            });
+        });
+}
 
 ///utils
 const createOrderItem = (rawItem) => {

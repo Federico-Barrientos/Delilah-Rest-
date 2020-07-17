@@ -16,4 +16,6 @@ router.post('/',middle.validateToken, middle.ProductsIdExistOrder, controller.cr
 
 router.put('/:id', middle.isAdmin, controller.EditOrderState);
 
+router.delete('/:id' , middle.isAdmin, middle.orderExists, controller.deleteOrder);
+
 module.exports = router;
