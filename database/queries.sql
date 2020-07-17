@@ -1,14 +1,8 @@
-CREATE DATABASE IF NOT EXISTS delilah_resto;
+DROP DATABASE IF EXISTS delilah_resto;
+CREATE DATABASE delilah_resto;
 USE delilah_resto;
 
--- Eliminate tables if they exists
-
---  DROP TABLE users;
---  DROP TABLE products;
---  DROP TABLE orders;
---  DROP TABLE orders_products;
-
--- Table creation
+DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(70) NOT NULL,
@@ -21,6 +15,7 @@ CREATE TABLE users (
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+DROP TABLE IF EXISTS products;
 CREATE TABLE products (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(70) NOT NULL,
@@ -30,6 +25,7 @@ CREATE TABLE products (
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+DROP TABLE IF EXISTS orders;
 CREATE TABLE orders (
     order_id INT PRIMARY KEY AUTO_INCREMENT,
     order_state VARCHAR (50) NOT NULL,
@@ -41,6 +37,7 @@ CREATE TABLE orders (
     user_id INT NOT NULL
 );
 
+DROP TABLE IF EXISTS orders_products;
 CREATE TABLE orders_products (
     order_product_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     product_id INT NOT NULL,
@@ -50,8 +47,7 @@ CREATE TABLE orders_products (
     total INT NOT NULL
 );
 
--- populate tables
---users
+
 INSERT INTO users
   (user_id, username, fullname, email, phoneNumber, user_address, password, is_admin)
 VALUE
@@ -67,16 +63,16 @@ VALUE
    ),
    (
     2,
-    "MartuForchino",
-    "Martina Forchino",
-    "martona@hotmail.com",
-    153123543,
-    "Callao 14??",
-    "LOSRaules2126",
+    "ACDCYoung",
+    "Angus Young",
+    "backinblack@hotmail.com",
+    113123543,
+    "Seattle Avenue 123",
+    "TNT",
     FALSE
    );
  
- --products
+
  INSERT INTO products (name, price, description, img_url)
  VALUE(
      "French Fries",
@@ -86,18 +82,29 @@ VALUE
  ),(
      "Chesee Burger",
      150,
-    "A simple chesee burger with chesee (?)",
+    "A simple chesee burger with chesee",
     "https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg"
+ ),(
+     "Cesar salad",
+     130,
+    "A salad without meat",
+    "https://natashaskitchen.com/wp-content/uploads/2019/01/Caesar-Salad-Recipe-3.jpg"
+ ),(
+     "Hotdog",
+     100,
+    "A hotdog with 3 with fries on top",
+    "https://images-gmi-pmc.edge-generalmills.com/74e022a5-cbd3-4fb9-86f3-3f3f747ba681.jpg"
  );
 
- --order
+
 
  INSERT INTO orders (order_state, order_date, order_description, payment_method, payment_amount , user_id)
  VALUE(
      "delivered",
      NOW(),
-     "1x Hambur, 2xPapas",
+     "2x French Fries - 9x Hotdog",
      "cash",
-     500,
-     1
- )
+     1100,
+     2
+ );
+
