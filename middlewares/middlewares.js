@@ -162,7 +162,7 @@ middle.loginCheck = (req, res, next) => {
         })
             .catch(err => {
                 res.status(500).json({
-                    mensaje: 'Ocurrió un error con la base de datos',
+                    mensaje: 'An error with the database happened',
                     err: err
                 });
             });
@@ -186,7 +186,7 @@ middle.accountState = (req, res, next) => {
         })
         .catch(err => {
             res.status(500).json({
-                mensaje: 'Ocurrió un error con la base de datos',
+                mensaje: 'An error with the database happened',
                 err: err
             });
     });
@@ -249,27 +249,6 @@ middle.ProductsIdExistOrder = (req, res, next) => {
         .catch(err => res.status(500).json(err))
 }
 
-// middle.both = (req, res, next) => {
-//     try {
-//         const token = req.headers.authorization;
-//         const verification = jwt.verify(token, signature);
-//         if(verification.is_admin === 1){
-//             req.locals = {
-//                 ...req.locals,
-//                 idUser: verification.user_id,
-//                 isAdmin: verification.is_admin
-//             }
-//             next();
-//         }else {res.status(403).json({error})}
-//     }     
-//     catch {(err) =>
-//         res.status(500).json({
-//             mensaje: 'Ocurrió un error con la base de datos',
-//             err: err
-//         });
-//     };
-// };
-
 
 //Global middlewares
 
@@ -279,11 +258,11 @@ middle.isAdmin = (req, res, next) => {
         const token = req.headers.authorization.split(" ")[0];
     
         if(token == ""){
-            res.status(404).json({message: "You need to be logged to access"})
+            res.status(401).json({message: "You need to be logged to access"})
         }else{
                 const verification = jwt.verify(token, signature);
                 if(verification.is_admin == 0){
-                    res.status(404).json({message: "You don't have permission for this action"})
+                    res.status(401).json({message: "You don't have permission for this action"})
                 }else{
                     req.locals = {
                         ...req.locals,

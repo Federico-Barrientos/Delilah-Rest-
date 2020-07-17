@@ -1,0 +1,408 @@
+{
+	"info": {
+		"_postman_id": "08cbaaed-b851-4b05-9fb3-95886f2e197f",
+		"name": "Delilah-Resto",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "getUsers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ5MjU1NzV9.P7ovZbH4QSU1QbUVwtHu0GLV6iHUmzgFA8eWsOoQJrM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "          {\r\n            \"username\": \"MartuForchino\",\r\n            \"password\": \"LOSRaules2126\"\r\n          } ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "          {\r\n            \"username\": \"HeroeDelSilencio4\",\r\n            \"fullname\": \"Enrique Bunbury\",\r\n            \"email\": \"HDS.EB@gmail.com\",\r\n            \"phoneNumber\": \"123123645\",\r\n            \"user_address\":\"Rambla 123, Barcelona\",\r\n            \"password\": \"blablabla\"\r\n          } ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAdmin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ5MjU1NzV9.P7ovZbH4QSU1QbUVwtHu0GLV6iHUmzgFA8eWsOoQJrM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "          {\r\n            \"username\": \"PatriMar\",\r\n            \"password\": \"Lola\"\r\n          } ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/users/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "getProducts(Avalible)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkZlZGVCYXJyaWVudG9zIiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOjEsImlzX2FjdGl2ZSI6MSwiaWF0IjoxNTk0NjYyMTA0fQ.Ilz6GC2jUa2NeGEIUV5xuIre32LVWAU--xuJ5OkmwvI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/products",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProducts(All)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ4MzcwODR9.yXy9SrkYvEKhAxlIHUH8c6ljWulOBJ1b4vByQ27yhBU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/products/allproducts",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"allproducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProductsByID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkZlZGVCYXJyaWVudG9zIiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOjEsImlzX2FjdGl2ZSI6MSwiaWF0IjoxNTk0Nzc4OTY0fQ.k5iWpcEciW8n_AVsYYj7TDbrnbm8kNARfahTK_uqKxo",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/products/2",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postProducts",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ4MzcwODR9.yXy9SrkYvEKhAxlIHUH8c6ljWulOBJ1b4vByQ27yhBU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Test2\",\r\n    \"price\": 999,\r\n    \"description\": \"TEST\",\r\n    \"img_url\": \"TEST.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/products",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EditProduct",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ4MzcwODR9.yXy9SrkYvEKhAxlIHUH8c6ljWulOBJ1b4vByQ27yhBU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Chesee Burger\",\r\n    \"price\": 150,\r\n    \"description\": \"A simple chesee burger with chesee (?)\",\r\n    \"img_url\": \"https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg\",\r\n    \"is_active\": \"FALSE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/products/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteProduct",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ4MzcwODR9.yXy9SrkYvEKhAxlIHUH8c6ljWulOBJ1b4vByQ27yhBU",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/products/2",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "CreateOrder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ5MjU1NzV9.P7ovZbH4QSU1QbUVwtHu0GLV6iHUmzgFA8eWsOoQJrM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"payment_method\": \"cash\",\r\n  \"products\": [\r\n    {\r\n      \"product_id\": 5,\r\n      \"product_amount\": 2\r\n    },    {\r\n      \"product_id\": 30,\r\n      \"product_amount\": 9\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/orders",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EditState",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ5MjU1NzV9.P7ovZbH4QSU1QbUVwtHu0GLV6iHUmzgFA8eWsOoQJrM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"newState\": \"Delivered\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/orders/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"orders",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOrderOrOrders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnR1Rm9yY2hpbm8iLCJ1c2VyX2lkIjoyLCJpc19hZG1pbiI6MCwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTQ5MjU1NzV9.P7ovZbH4QSU1QbUVwtHu0GLV6iHUmzgFA8eWsOoQJrM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/orders/",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

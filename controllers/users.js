@@ -61,7 +61,7 @@ controller.showUserByUsername = (req, res) => {
         })
         .catch(err => {
             res.status(500).json({
-                mensaje: 'Ocurrió un error con la base de datos',
+                mensaje: 'An error with the database happened',
                 err: err
         });
     });
@@ -91,12 +91,12 @@ controller.createAccount = (req, res) => {
         }
     ).then(() => {
         res.status(201).json({
-            mensaje: 'El usuario: ' + nuevoUsuario.username + ' fue agregado con exito'
+            mensaje: 'The User: ' + nuevoUsuario.username + ' was succesfully created'
         });
     })
     .catch(err => {
         res.status(500).json({
-            mensaje: 'Ocurrió un error con la base de datos',
+            mensaje: 'An error with the database happened',
             err: err
         });
     });
@@ -133,7 +133,6 @@ controller.createAdmin = (req, res) => {
 
 controller.login = (req, res) => {
     const input = req.body;
-    console.log("HOLAAAAA " + input.username);
     db.query(
         'SELECT * FROM users WHERE username = :username',{
             type: db.QueryTypes.SELECT,
@@ -147,12 +146,11 @@ controller.login = (req, res) => {
                 is_admin: data.is_admin,
                 is_active: data.is_active
             });
-            console.log(token);
             res.status(200).json(token);
         })
         .catch(err => {
             res.status(500).json({
-                mensaje: 'Ocurrió un error con la base de datos',
+                mensaje: 'An error with the database happened',
                 err: err
             });
         });

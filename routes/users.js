@@ -13,7 +13,7 @@ const middle = require('../middlewares/middlewares');
 router.get('/', middle.validateToken, controller.showUsers);
 
 //login
-router.get('/login', middle.loginCheck, middle.accountState, controller.login);
+router.post('/login', middle.loginCheck, middle.accountState, controller.login);
 
 //create account
 router.post('/', middle.checkUsernameExistence, middle.checkEmptyFieldsUser, controller.createAccount);
