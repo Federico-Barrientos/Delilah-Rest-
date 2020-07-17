@@ -1,15 +1,15 @@
-oopenapi: 3.0.1
+openapi: 3.0.1
 info:
-  title: Delilah Restó
-  description: Restaurant API
+  title: Delilah Resto
+  description: Restaurant API.
   contact:
-    email: fgbarrientos@gmail.com
+    email: fgbarrientos93@gmail.com
   version: 1.0.0
 externalDocs:
   description: Github Repository
-  url: https://github.com/Federico-Barrientos/Delilah-Resto
+  url: https://github.com/federico-barrientos/Delilah-Resto
 servers:
-  - url: https://localhost:3000
+  - url: https://localhost:3000/
 tags:
   - name: User
     description: Actions on users
@@ -103,7 +103,6 @@ paths:
           description: "You don't have permission for this action"
         500:
           description: "An error with the database happened"
-
 
 
     
@@ -253,22 +252,15 @@ paths:
       tags:
         - Orders
       summary: Get list of orders
-      description: Returns a list of products. If user is admin returns a list of all orders, if user is not admin returns a list of their orders only.
+      description: Returns a list of orders
       operationId: getOrders
       responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Orders"
-        401:
-          $ref: "#/components/responses/Unauthorized"
-        404:
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Default"
-
+          200:
+            description: "-"
+          401:
+            description: "You need to be logged"
+          500:
+            description: "An error with the database happened"        
     post:
       tags:
         - Orders
@@ -283,53 +275,46 @@ paths:
               $ref: "#/components/schemas/NewOrder"
         required: true
       responses:
-        200:
-          description: Order modified succesfully
-        400:
-          description: Error validating input data
-        401:
-          $ref: "#/components/responses/Unauthorized"
-        default:
-          $ref: "#/components/responses/Default"
+        200: 
+          description: "-"
+        402:
+          description: "You need to be logged"
+        500:
+         description: "An error with the database happened"            
+
 
   /orders/:id:
     get:
       tags:
         - Orders
-      summary: Gets product by Id (only Admin)
+      summary: Gets order by id
       parameters:
         - name: id
           in: path
-          description: The ID of the order that needs to be fetched.
+          description: The ID of the order
           required: true
           schema:
             type: string
-      description: Returns a specific product detail, fetched by it's ID
-      operationId: getOrderById
+      description: Returns a specefic order
+      operationId: getOrder
       responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Orders"
-        401:
-          $ref: "#/components/responses/UnauthorizedAdmin"
+        200: 
+          description: "-"
         404:
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Default"
+          description: "The order you're looking for doesn't exist"
+        500:
+         description: "An error with the database happened"      
 
     put:
       tags:
         - Orders
-      summary: Gets product by Id (only Admin)
-      description: Edits a specific product
+      summary: Gets order by Id
+      description: Edits a specific order
       operationId: editOrder
       parameters:
         - name: id
           in: path
-          description: The ID of the order that needs to be fetched.
+          description: The ID of the order
           required: true
           schema:
             type: string
@@ -340,23 +325,17 @@ paths:
             schema:
               type: object
               properties:
-                orderStatus:
+                order_status:
                   type: string
                   example: delivered
         required: true
       responses:
-        200:
-          description: "Product with id {productId} modified correctly"
-        400:
-          description: Error validating input data
-        401:
-          $ref: "#/components/responses/UnauthorizedAdmin"
-        403:
-          description: The state given for the product is not valid
+        200: 
+          description: "-"
         404:
-          $ref: "#/components/responses/NotFound"
-        default:
-          $ref: "#/components/responses/Default"
+          description: "The order you're looking for doesn't exist"
+        500:
+         description: "An error with the database happened"      
 
 components:
   schemas:
@@ -394,152 +373,105 @@ components:
         Password:
           type: "string"
           example: sarasa123
-   
-   
-   
-   
-   
-    UserInfo:
-      type: array
-      items:
-        type: object
-        properties:
-          user_id:
-            type: integer
-            example: 1
-          username:
-            type: string
-            example: ghee_dough
-          full_name:
-            type: string
-            example: Guido Torres
-          email:
-            type: string
-            example: gheedough@gmail.com
-          phone:
-            type: integer
-            example: 5491122223333
-          delivery_address:
-            type: string
-            example: Fake St. 123
-          is_admin:
-            type: boolean
-            example: 0
-          is_disabled:
-            type: boolean
-            example: 0
-    Product:
+          
+    Products:
       type: object
       properties:
         product_id:
           type: integer
-          example: 1
+          example: 2
+        price:
+          type: integer
+          example: 150
         name:
           type: string
-          example: French Fries
-        price:
-          type: number
-          example: 268.5
+          example: Burger
         img_url:
           type: string
-          example: https://www.seriouseats.com/2018/04/20180309-french-fries-vicky-wasik-15-1500x1125.jpg
+          example: https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg
         description:
           type: string
-          example: 100gr of the best french fries
-            top with spices
-
-    Products:
-      type: array
-      items:
-        $ref: "#/components/schemas/Product"
+          example: A standard burger
+        is_disabled:
+          type: boolean
+          example: 1
+          
     OrderProduct:
       type: object
       properties:
-        order_prod_id:
-          type: integer
-          example: 104
-        order_id:
-          type: integer
-          example: 5
         product_id:
           type: integer
           example: 70
         product_amount:
           type: integer
-          example: 70
+          example: 3
         name:
           type: string
-          example: Avocado Toast
+          example: Burger
         price:
           type: number
-          example: 268.5
+          example: 150
         img_url:
           type: string
-          example: https://via.placeholder.com/150
+          example: https://www.mcdonalds.com/is/image/content/dam/usa/nfl/nutrition/items/hero/desktop/t-mcdonalds-Cheeseburger.jpg
         description:
           type: string
-          example: A thick, crusty, toastd rye bread toast with an avocado mix on
-            top with spices
+          example: A standard burger
         is_disabled:
           type: boolean
-          example: 0
-    OrderProducts:
-      type: array
-      items:
-        $ref: "#/components/schemas/OrderProduct"
+          example: 
+          
+ 
     Order:
       type: object
       properties:
         order_id:
           type: integer
           example: 1
-        status:
+        order_status:
           type: string
           example: new
-        date:
+        order_date:
           type: string
           format: date-time
-          example: "2020-04-10T10:11:12Z"
-        description:
+          example: "2020-07-16 T10:11:12Z"
+        order_description:
           type: string
-          example: "1x AvoToast"
+          example: "1x Burger"
         payment_method:
           type: string
           example: cash
         total:
           type: integer
-          example: 666
+          example: 555
         user_id:
           type: integer
           example: 1
         username:
           type: string
-          example: gheedough
-        full_name:
+          example: FedeBarrientos
+        fullname:
           type: string
-          example: "Guido Torres"
+          example: Federico Barrientos
         email:
           type: string
-          example: gheedough@gmail.com
-        phone:
+          example: fgbarrientos93@gmail.com
+        phoneNumber:
           type: integer
-          example: 1122223333
+          example: 3416123456
         delivery_address:
           type: string
-          example: Calle Falsa 123
+          example: San Lorenzo 123
         products:
           $ref: "#/components/schemas/OrderProducts"
-    Orders:
-      type: array
-      items:
-        $ref: "#/components/schemas/Order"
+
     NewOrder:
       type: object
       properties:
         payment_method:
           type: string
           example: cash
-        data:
+        products:
           type: array
           items:
             type: object
@@ -550,77 +482,7 @@ components:
               amount:
                 type: integer
                 example: 3
-    Token:
-      type: object
-      properties:
-        token:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-          example: "An error has ocurred: <error>"
-      required:
-        - error
-    Send:
-      type: string
-      example: "Error message"
-      
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  # Reused Responses
-  responses:
-    UnauthorizedError:
-      description: Invalid Token
-    Disabled:
-      description: Invalid request, user account is disabled
-    NotAdmin:
-      description: Operation forbidden, not an admin
-    NotFound:
-      description: The specified resource was not found
-    Default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - $ref: "#/components/schemas/Send"
-          examples:
-            Token Invalidation:
-              summary: Unauthorized - Invalid Token
-              value: Unauthorized - Invalid Token
-            Disabled Account:
-              summary: Unauthorized - Account is Disabled
-              value: Unauthorized - User account is disabled
-    UnauthorizedAdmin:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - $ref: "#/components/schemas/Send"
-          examples:
-            Token Invalidation:
-              summary: Unauthorized - Invalid Token
-              value: Unauthorized - Invalid Token
-            Disabled Account:
-              summary: Unauthorized - Account is Disabled
-              value: Unauthorized - User account is disabled
-            Not Admin:
-              summary: Unauthorized - Not an admin
-              value: Unauthorized - Not an admin
+  
 
 security:
   - bearerAuth: []
