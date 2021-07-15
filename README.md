@@ -2,7 +2,7 @@
 Proyecto "Delilah Restó" del curso Desarrollo Web Fullstack de Acámica
 
 ## Documentacion
-Importar en el archivo 'api-doc.yaml' en [Swagger](https://editor.swagger.io)
+Importar en el archivo 'openapi.yaml' en [Swagger](https://editor.swagger.io)
 Asi podras ver los endpoins y metodos disponibles
 
 ## Instalacion
