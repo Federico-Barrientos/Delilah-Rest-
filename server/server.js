@@ -15,6 +15,9 @@ const products = require('../routes/products.js');
 const users = require('../routes/users');
 const orders = require('../routes/orders');
 
+//CORS
+const cors = require('cors');
+
 ////////SERVER////////////////
 //initialize the server
 server.listen(3000, () => {
@@ -23,6 +26,11 @@ server.listen(3000, () => {
 })
 //general middlewares
 server.use(bodyParser.json());
+
+//CROS
+server.use(cors({
+    origin: '*'
+}));
 
 //routes handler
 server.use('/products', products);
